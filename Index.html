@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VolKov Stresser - Informações</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e17;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        canvas#matrix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.06;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #cc0000;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #cc0000, #8b0000);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #ffd700;
+            box-shadow: 0 0 30px #cc000066;
+        }
+
+        .logo-wrap h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #cc0000, #ff3333);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
+
+        .logo-wrap small {
+            display: block;
+            font-size: 11px;
+            color: #ffd700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .badge-online {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #110a0f;
+            padding: 8px 18px;
+            border-radius: 20px;
+            border: 1px solid #cc000066;
+        }
+
+        .badge-dot {
+            width: 10px;
+            height: 10px;
+            background: #cc0000;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 8px #cc0000; }
+            50% { opacity: 0.4; box-shadow: 0 0 16px #cc0000; }
+        }
+
+        /* ===== TABS ===== */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 30px;
+            background: #0d1520;
+            border-radius: 10px;
+            padding: 4px;
+            border: 1px solid #1e293b;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: #667788;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .tab-btn i {
+            margin-right: 8px;
+        }
+
+        .tab-btn:hover {
+            color: #c0d0e0;
+            background: #1a2a3a33;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #cc000022, #8b000022);
+            color: #ff3333;
+            border: 1px solid #cc000066;
+        }
+
+        /* ===== TAB CONTENT ===== */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: linear-gradient(145deg, #111827, #0d1520);
+            border: 1px solid #1e293b;
+            border-radius: 14px;
+            padding: 28px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '\2605';
+            position: absolute;
+            bottom: -10px;
+            right: -10px;
+            font-size: 120px;
+            color: #cc0000;
+            opacity: 0.03;
+            pointer-events: none;
+            line-height: 1;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-title i {
+            color: #cc0000;
+        }
+
+        /* ===== SOVIET DETAILS ===== */
+        .soviet-stripe {
+            height: 4px;
+            background: repeating-linear-gradient(
+                90deg,
+                #cc0000 0px,
+                #cc0000 30px,
+                #ffd700 30px,
+                #ffd700 60px
+            );
+            margin-bottom: 25px;
+            border-radius: 2px;
+        }
+
+        .soviet-ornament {
+            text-align: center;
+            margin: 15px 0;
+            color: #cc000066;
+            font-size: 14px;
+            letter-spacing: 8px;
+            font-family: serif;
+        }
+
+        .soviet-ornament span {
+            display: inline-block;
+            padding: 0 20px;
+        }
+
+        .soviet-ornament::before,
+        .soviet-ornament::after {
+            content: '\2605';
+            color: #cc0000;
+            font-size: 14px;
+            margin: 0 10px;
+        }
+
+        /* ===== PROFILE / CRIADOR ===== */
+        .creator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .creator-card {
+            background: #0a0e17;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .creator-card:hover {
+            border-color: #cc000066;
+            transform: translateY(-3px);
+        }
+
+        .creator-card::after {
+            content: '\2605';
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            color: #cc000033;
+            font-size: 18px;
+        }
+
+        .creator-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #cc0000, #8b0000);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: #ffd700;
+            margin: 0 auto 16px;
+            box-shadow: 0 0 30px #cc000033;
+        }
+
+        .creator-card h3 {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .creator-card .role {
+            font-size: 13px;
+            color: #ff3333;
+            margin-bottom: 12px;
+        }
+
+        .creator-card .desc {
+            font-size: 13px;
+            color: #8899aa;
+            line-height: 1.5;
+        }
+
+        .creator-card .social {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .creator-card .social a {
+            color: #667788;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+
+        .creator-card .social a:hover {
+            color: #cc0000;
+        }
+
+        /* ===== CONTACT / COMPRA ===== */
+        .contact-box {
+            background: #0a0e17;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            transition: all 0.3s;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .contact-box:hover {
+            border-color: #cc000066;
+        }
+
+        .contact-box::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #cc0000;
+            border-radius: 3px 0 0 3px;
+        }
+
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: #cc000022;
+            color: #cc0000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .contact-info h4 {
+            font-size: 14px;
+            color: #8899aa;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .contact-info .value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            word-break: break-all;
+        }
+
+        .contact-info .value a {
+            color: #ff3333;
+            text-decoration: none;
+        }
+
+        .contact-info .value a:hover {
+            text-decoration: underline;
+        }
+
+        .copy-btn {
+            margin-left: auto;
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            color: #8899aa;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            border-color: #cc0000;
+            color: #cc0000;
+        }
+
+        /* ===== PRICING ===== */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .plan-card {
+            background: #0a0e17;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 28px 24px;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .plan-card.featured {
+            border-color: #cc0000;
+            box-shadow: 0 0 30px #cc000022;
+        }
+
+        .plan-card.featured::before {
+            content: '\2605 POPULAR \2605';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #cc0000;
+            color: #ffd700;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 16px;
+            border-radius: 10px;
+            letter-spacing: 1px;
+        }
+
+        .plan-card h3 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .plan-card .price {
+            font-size: 36px;
+            font-weight: 800;
+            color: #ff3333;
+            margin: 12px 0;
+        }
+
+        .plan-card .price small {
+            font-size: 14px;
+            color: #667788;
+            font-weight: 400;
+        }
+
+        .plan-card ul {
+            list-style: none;
+            text-align: left;
+            margin: 18px 0;
+        }
+
+        .plan-card ul li {
+            padding: 8px 0;
+            font-size: 14px;
+            color: #aabbcc;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .plan-card ul li i {
+            color: #cc0000;
+            font-size: 12px;
+        }
+
+        .btn-buy {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #cc0000, #8b0000);
+            border: none;
+            border-radius: 8px;
+            color: #ffd700;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-buy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px #cc000033;
+        }
+
+        /* ===== FAQ ===== */
+        .faq-item {
+            border-bottom: 1px solid #1a2a3a;
+            padding: 18px 0;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #c0d0e0;
+        }
+
+        .faq-question i {
+            color: #cc0000;
+            transition: transform 0.3s;
+        }
+
+        .faq-question.open i {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            margin-top: 12px;
+            font-size: 14px;
+            color: #8899aa;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .faq-answer.open {
+            display: block;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #445566;
+            font-size: 13px;
+            border-top: 2px solid #cc0000;
+            margin-top: 30px;
+        }
+
+        footer a {
+            color: #ff3333;
+            text-decoration: none;
+        }
+
+        footer .soviet-footer {
+            color: #cc000066;
+            font-size: 18px;
+            letter-spacing: 6px;
+            margin-bottom: 10px;
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 14px 22px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            animation: slideUp 0.3s ease;
+        }
+
+        .toast.show {
+            display: flex;
+        }
+
+        .toast.success {
+            border-left: 4px solid #cc0000;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== DIVIDER ===== */
+        .divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+            color: #cc000066;
+            font-size: 14px;
+        }
+
+        .divider .line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #cc000066, transparent);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .contact-box {
+                flex-direction: column;
+                text-align: center;
+            }
+            .contact-box::before {
+                width: 100%;
+                height: 3px;
+                top: 0;
+                left: 0;
+                right: 0;
+                border-radius: 3px 3px 0 0;
+            }
+            .copy-btn {
+                margin-left: 0;
+            }
+            .tab-btn {
+                font-size: 12px;
+                padding: 10px 12px;
+                min-width: auto;
+            }
+            .tab-btn i {
+                margin-right: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Matrix Background -->
+    <canvas id="matrix"></canvas>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo-wrap">
+                <div class="logo-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div>
+                    <h1>VolKov</h1>
+                    <small>STRESSER SERVICE • CCCP</small>
+                </div>
+            </div>
+            <div class="badge-online">
+                <span class="badge-dot"></span>
+                <span>Система Работает</span>
+            </div>
+        </header>
+
+        <!-- Soviet Stripe -->
+        <div class="soviet-stripe"></div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="info">
+                <i class="fas fa-info-circle"></i> Информация
+            </button>
+            <button class="tab-btn" data-tab="criadores">
+                <i class="fas fa-users"></i> Создатели
+            </button>
+            <button class="tab-btn" data-tab="comprar">
+                <i class="fas fa-shopping-cart"></i> Купить
+            </button>
+            <button class="tab-btn" data-tab="planos">
+                <i class="fas fa-crown"></i> Планы
+            </button>
+            <button class="tab-btn" data-tab="faq">
+                <i class="fas fa-question-circle"></i> ЧаВо
+            </button>
+        </div>
+
+        <!-- ===== TAB 1: INFORMAÇÕES ===== -->
+        <div class="tab-content active" id="tab-info">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-shield-alt"></i> О VolKov Stresser
+                </div>
+                <p style="color: #8899aa; line-height: 1.7; margin-bottom: 20px;">
+                    O <strong style="color:#ff3333;">VolKov Stresser</strong> é a ferramenta de teste de estresse mais 
+                    poderosa do mercado. Com infraestrutura dedicada e métodos exclusivos, 
+                    oferecemos desempenho máximo para profissionais de segurança que precisam 
+                    validar a resiliência de suas redes e servidores.
+                </p>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:15px;">
+                    <div style="background:#0a0e17; border-radius:10px; padding:18px; text-align:center; border:1px solid #1e293b;">
+                        <div style="font-size:28px; color:#cc0000; margin-bottom:8px;">2.4 Tbps</div>
+                        <div style="font-size:12px; color:#667788;">Максимальная Пропускная Способность</div>
+                    </div>
+                    <div style="background:#0a0e17; border-radius:10px; padding:18px; text-align:center; border:1px solid #1e293b;">
+                        <div style="font-size:28px; color:#cc0000; margin-bottom:8px;">16</div>
+                        <div style="font-size:12px; color:#667788;">Методы Атаки</div>
+                    </div>
+                    <div style="background:#0a0e17; border-radius:10px; padding:18px; text-align:center; border:1px solid #1e293b;">
+                        <div style="font-size:28px; color:#cc0000; margin-bottom:8px;">99.9%</div>
+                        <div style="font-size:12px; color:#667788;">Гарантия uptime</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-address-card"></i> Контактная Информация
+                </div>
+
+                <!-- WHATSAPP - NOVO NÚMERO DO DONO -->
+                <div class="contact-box">
+                    <div class="contact-icon"><i class="fab fa-whatsapp"></i></div>
+                    <div class="contact-info">
+                        <h4>Whatsapp / Telegram (Dono)</h4>
+                        <div class="value">
+                            <a href="https://wa.me/5511963167711" target="_blank">+55 (11) 96316-7711</a>
+                        </div>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('+55 (11) 96316-7711')">
+                        <i class="far fa-copy"></i> Копировать
+                    </button>
+                </div>
+
+                <div class="contact-box">
+                    <div class="contact-icon"><i class="fab fa-telegram-p
